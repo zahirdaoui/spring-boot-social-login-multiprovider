@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .login-card {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 300px;
+        }
+
+        .login-card h2 {
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            color: #333;
+        }
+
+        .login-card a {
+            display: block;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+        }
+
+        .btn-google { background-color: #ea4335; }
+        .btn-facebook { background-color: #1877f2; }
+        .btn-github { background-color: #333333; }
+
+        .login-card a:hover {
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-card">
+    <h2>Welcome!</h2>
+    <a th:href="@{/oauth2/authorization/google}" class="btn-google">Sign in with Google</a>
+    <a th:href="@{/oauth2/authorization/facebook}" class="btn-facebook">Sign in with Facebook</a>
+    <a th:href="@{/oauth2/authorization/github}" class="btn-github">Sign in with GitHub</a>
+</div>
+
+</body>
+</html>
