@@ -1,6 +1,8 @@
 package com.OAuth2.OAuth2.service;
 
 import com.OAuth2.OAuth2.entity.User;
+import com.OAuth2.OAuth2.entity.UserProvider;
+import com.OAuth2.OAuth2.repo.UserProviderRepository;
 import com.OAuth2.OAuth2.repo.UserRepository;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -9,20 +11,20 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
-
 @Service
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     private final UserRepository userRepository;
+    private final UserProviderRepository userProviderRepository;
 
-    public CustomOAuth2UserService(UserRepository userRepository) {
+    public CustomOAuth2UserService(UserRepository userRepository, UserProviderRepository userProviderRepository) {
         this.userRepository = userRepository;
+        this.userProviderRepository = userProviderRepository;
     }
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         OAuth2User oAuth2User = super.loadUser(userRequest);
-
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
 
         String email = null;
@@ -48,44 +50,55 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             }
         }
         else if (registrationId.equals("github")) {
-            // في GitHub، المعرف الفريد يأتي كـ Integer أو Long لذا نحوله إلى String
+
             Object idObj = oAuth2User.getAttribute("id");
             if (idObj != null) {
                 providerId = idObj.toString();
             }
             name = oAuth2User.getAttribute("name");
             if (name == null) {
-                name = oAuth2User.getAttribute("login"); // إذا لم يكن الاسم موجوداً، نأخذ اسم المستخدم (Username)
+                name = oAuth2User.getAttribute("login"); //
             }
             email = oAuth2User.getAttribute("email");
             if (email == null) {
                 email = oAuth2User.getAttribute("login") + "@github.com";
             }
-            picture = oAuth2User.getAttribute("avatar_url"); // رابط صورة غيت هب يأتي بهذا الاسم
+            picture = oAuth2User.getAttribute("avatar_url");
         }
         else {
             throw new OAuth2AuthenticationException("Unsupported provider: " + registrationId);
         }
 
-        // البحث أو الحفظ في قاعدة البيانات
-        User user = userRepository.findByEmail(email).orElse(null);
 
-        if (user == null) {
-            user = User.builder()
-                    .email(email)
-                    .name(name)
-                    .imageUrl(picture)
-                    .provider(registrationId)
-                    .providerId(providerId)
-                    .build();
-        } else {
+        UserProvider userProvider = userProviderRepository.findByProviderAndProviderId(registrationId, providerId)
+                .orElse(null);
+
+        User user;
+
+        if (userProvider != null) {
+            user = userProvider.getUser();
             user.setName(name);
             user.setImageUrl(picture);
-            user.setProvider(registrationId);
-            user.setProviderId(providerId);
-        }
+            userRepository.save(user);
+        } else {
+            user = userRepository.findByEmail(email).orElse(null);
 
-        userRepository.save(user);
+            if (user == null) {
+                user = User.builder()
+                        .email(email)
+                        .name(name)
+                        .imageUrl(picture)
+                        .build();
+                user = userRepository.save(user);
+            }
+
+            UserProvider newProvider = UserProvider.builder()
+                    .provider(registrationId)
+                    .providerId(providerId)
+                    .user(user)
+                    .build();
+            userProviderRepository.save(newProvider);
+        }
 
         return oAuth2User;
     }

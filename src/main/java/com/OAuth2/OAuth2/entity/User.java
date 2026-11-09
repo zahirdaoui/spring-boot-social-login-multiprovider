@@ -3,6 +3,9 @@ package com.OAuth2.OAuth2.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 @Table(name = "users")
 @Getter
@@ -23,7 +26,7 @@ public class User {
 
     private String imageUrl;
 
-    private String provider; // لمعرفة هل سجل عبر google أو github مستقبلاً
-
-    private String providerId; // الـ ID الفريد الذي يرسله المزود للمستخدم
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @Builder.Default
+    private Set<UserProvider> providers = new HashSet<>();
 }
