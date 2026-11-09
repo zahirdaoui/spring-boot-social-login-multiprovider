@@ -4,6 +4,7 @@ import com.OAuth2.OAuth2.entity.User;
 import com.OAuth2.OAuth2.entity.UserProvider;
 import com.OAuth2.OAuth2.repo.UserProviderRepository;
 import com.OAuth2.OAuth2.repo.UserRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Map;
 @Service
+@Transactional
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     private final UserRepository userRepository;
@@ -86,6 +88,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             if (user == null) {
                 user = User.builder()
                         .email(email)
+                        .role("ROLE_USER")
                         .name(name)
                         .imageUrl(picture)
                         .build();
@@ -99,7 +102,16 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .build();
             userProviderRepository.save(newProvider);
         }
+        java.util.List<org.springframework.security.core.GrantedAuthority> authorities =
+                java.util.Collections.singletonList(
+                        new org.springframework.security.core.authority.SimpleGrantedAuthority(user.getRole())
+                );
 
-        return oAuth2User;
+
+        return new org.springframework.security.oauth2.core.user.DefaultOAuth2User(
+                authorities,
+                oAuth2User.getAttributes(),
+                "email"
+        );
     }
 }

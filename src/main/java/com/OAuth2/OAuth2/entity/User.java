@@ -26,6 +26,9 @@ public class User {
 
     private String imageUrl;
 
+    @Column(nullable = false)
+    private String role = "ROLE_USER";
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @Builder.Default
     private Set<UserProvider> providers = new HashSet<>();

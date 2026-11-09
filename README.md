@@ -1,11 +1,10 @@
-# 🚀 Project Roadmap & Setup Guide
-**Spring Boot 3.x Multi-Provider OAuth 2.0 & Account Linking System**
+  # 🚀 Project Roadmap & Setup Guide
+  # Secure Multi-Provider OAuth 2.0 & RBAC System in Spring Boot
 
----
 
-## 📌 Project Overview
-A production-ready, secure, multi-provider OAuth 2.0 authentication system built with **Spring Boot 3.x**, **Spring Security 6.x**, **Spring Data JPA**, and **MySQL**. The system supports seamless authentication via Google, Facebook, and GitHub, handles normalized data structures, and implements advanced user identity strategies like Account Linking.
-
+  ## 📌 Project Overview
+  A robust, production-ready Spring Boot 3.3.2 enterprise application implementing multi-provider social authentication (Google, Facebook, GitHub), intelligent account linking, and a secure Role-Based Access Control (RBAC) authorization model powered by Spring Security and Hibernate 6.5.2.
+      
 ---
 
 ## 🗺️ Completed Milestones
@@ -30,7 +29,12 @@ A production-ready, secure, multi-provider OAuth 2.0 authentication system built
   - Implemented automatic fallback email generation (`username@github.com`) to prevent `DataIntegrityViolationException` for private GitHub profiles.
 - [x] Built **Account Linking Logic**: Unified multiple OAuth providers into a single user identity when matching primary emails are detected.
 
-### Phase 4: Security & Session Lifecycle
+### 4. Role-Based Access Control (RBAC)
+  * **Database-Driven Roles:** Each user is assigned a role (`ROLE_USER`, `ROLE_ADMIN`) persisted directly in the relational schema.
+  * **Bridge Service (`CustomOAuth2UserService`):** Intercepts the OAuth2 login flow, fetches or provisions user records inside a transactional boundary, transforms database roles into Spring Security `GrantedAuthority` objects (`SimpleGrantedAuthority`), and injects them into the active `SecurityContext`.
+  * **Method & Route Protection:** Configured in `SecurityConfig` via strict request matchers (`.hasAuthority("ROLE_USER")`).
+
+### Phase 5: Security & Session Lifecycle
 - [x] Configured `SecurityFilterChain` with Spring Security 6.x standards.
 - [x] Resolved CSRF-compliant logout flow (supporting POST forms and `AntPathRequestMatcher`).
 - [x] Created profile dashboard (`home.html`) powered by Thymeleaf.
@@ -92,5 +96,5 @@ http://localhost:8080
 
 ## 🛠️ Next Technical Objectives
 - [ ] Implement JWT (JSON Web Token) generation for stateless authentication.
-- [ ] Add Role-Based Access Control (RBAC) (`ROLE_USER`, `ROLE_ADMIN`).
+
 - [ ] Expand frontend capabilities or decouple API endpoints for SPA frameworks (React/Angular).
