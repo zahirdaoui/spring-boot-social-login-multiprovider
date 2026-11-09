@@ -91,3 +91,23 @@ Open your browser and navigate to:
 ```text
 http://localhost:8080
 ```
+
+## Architecture & Request Flow
+[ User ] 
+    │
+    ▼ (1) Click Login (Google / GitHub / Facebook)
+[ Spring Security Filter Chain ]
+    │
+    ▼ (2) Redirects to OAuth2 Provider & receives Authorization Code
+[ OAuth2LoginAuthenticationFilter ]
+    │
+    ▼ (3) Fetches User Info & delegates to Custom Service
+[ CustomOAuth2UserService ] ──(4) Account Linking & DB Check──► [ MySQL Database ]
+    │                                                               (Users & UserProviders)
+    ▼ (5) Maps Roles to GrantedAuthority & returns DefaultOAuth2User
+[ SecurityContextHolder ] (Stores Authenticated Session & **RBAC** Authorities)
+    │
+    ▼ (6) Authorization check based on SecurityConfig rules (/user/**, /admin/**)
+[ Protected Routes / Thymeleaf Views ]
+## 📁 Project Structure
+![Project Structure](project-structure.png)
