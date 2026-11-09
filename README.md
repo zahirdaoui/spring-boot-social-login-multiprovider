@@ -91,10 +91,3 @@ Open your browser and navigate to:
 ```text
 http://localhost:8080
 ```
-
----
-
-## 🛠️ Next Technical Objectives
-- [ ] Implement JWT (JSON Web Token) generation for stateless authentication.
-
-- [ ] Expand frontend capabilities or decouple API endpoints for SPA frameworks (React/Angular).
