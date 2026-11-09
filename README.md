@@ -4,7 +4,8 @@
 
   ## 📌 Project Overview
   A robust, production-ready Spring Boot 3.3.2 enterprise application implementing multi-provider social authentication (Google, Facebook, GitHub), intelligent account linking, and a secure Role-Based Access Control (RBAC) authorization model powered by Spring Security and Hibernate 6.5.2.
-      
+  
+  <img src="images/works.png" alt="Project Structure" width="400"/>
 ---
 
 ## 🗺️ Completed Milestones
@@ -110,4 +111,4 @@ http://localhost:8080
     ▼ (6) Authorization check based on SecurityConfig rules (/user/**, /admin/**)
 [ Protected Routes / Thymeleaf Views ]
 ## 📁 Project Structure
-![Project Structure](project-structure.png)
+![Project Structure](images/project-structure.png)
